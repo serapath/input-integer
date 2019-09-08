@@ -2,6 +2,8 @@
 const csjs = require('csjs-inject')
 const bel = require('bel')
 
+const state = {}
+
 const inputInteger = require('..')
 
 function demo () {
@@ -16,10 +18,17 @@ function demo () {
     </div>
   </div>`
   return page
-  // message = { type: 'update', body: 5 }
   function listen (message) {
-    const { type, body } = message
-    if (type === 'update') output.textContent = body
+    const { from, type, body } = message
+    if (type === 'update') {
+      if (!state[from]) state[from] = { value: Number(body) }
+      else state[from].value = Number(body)
+
+      const values = Object.keys(state).map(from => state[from].value)
+      const summary = values.reduce((sum, x) => sum + x, 0)
+
+      output.textContent = summary
+    }
   }
 }
 
@@ -1119,13 +1128,16 @@ module.exports = function (css, options) {
 const csjs = require('csjs-inject')
 const bel = require('bel')
 
+var id = 0
+
 module.exports = inputInteger
 
 function inputInteger (data, notify) {
+  const name = `inputInteger_` + id++
   const { value = 0, placeholder = 'number' } = data
   const input = bel`<input class=${css.inputInteger} type="number" placeholder=${placeholder} value=${value}>`
   input.onchange = event => {
-    notify({ type: 'update', body: input.value })
+    notify({ from: name, type: 'update', body: input.value })
   }
   return input
 }

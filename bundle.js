@@ -7,29 +7,43 @@ const state = {}
 const inputInteger = require('..')
 
 function demo () {
+  const reset = bel`<button>reset</button>`
+  reset.onclick = event => {
+    Object.keys(state).forEach(from => {
+      state[from].notify({ type: 'reset', body: 0 })
+    })
+  }
   const output = bel`<div class=${css.output}>0</div>`
   const page = bel`<div class=${css.demo}>
     <h1>input-integer demo</h1>
     ${output}
     <div class=${css.container}>
-      ${inputInteger({ value: 1, placeholder: 'integer' }, listen)}
-      ${inputInteger({ value: 2, placeholder: 'integer' }, listen)}
-      ${inputInteger({ value: 3, placeholder: 'integer' }, listen)}
+      ${inputInteger({ value: 10, placeholder: 'integer' }, protocol)}
+      ${inputInteger({ value: 20, placeholder: 'integer' }, protocol)}
+      ${inputInteger({ value: 30, placeholder: 'integer' }, protocol)}
     </div>
+    ${reset}
   </div>`
   return page
-  function listen (message) {
-    const { from, type, body } = message
-    if (type === 'update') {
-      if (!state[from]) state[from] = { value: Number(body) }
-      else state[from].value = Number(body)
-
-      const values = Object.keys(state).map(from => state[from].value)
-      const summary = values.reduce((sum, x) => sum + x, 0)
-
-      output.textContent = summary
+  function protocol (message, notify) {
+    const { from, value } = message
+    state[from] = { notify, value }
+    updateSummary()
+    return function listen (message) {
+      const { from, type, body } = message
+      if (type === 'update') {
+        if (!state[from]) throw new Error('unexpected message')
+        state[from].value = Number(body)
+        updateSummary()
+      }
     }
   }
+  function updateSummary () {
+    const values = Object.keys(state).map(from => state[from].value)
+    const summary = values.reduce((sum, x) => sum + x, 0)
+    output.textContent = summary
+  }
+
 }
 
 
@@ -1132,9 +1146,16 @@ var id = 0
 
 module.exports = inputInteger
 
-function inputInteger (data, notify) {
+function inputInteger (data, protocol) {
   const name = `inputInteger_` + id++
   const { value = 0, placeholder = 'number' } = data
+  const notify = protocol({ from: name, value }, message => {
+    const { type, body } = message
+    if (type === 'reset') {
+      input.value = body
+      notify({ from: name, type: 'update', body: body })
+    }
+  })
   const input = bel`<input class=${css.inputInteger} type="number" placeholder=${placeholder} value=${value}>`
   input.onchange = event => {
     notify({ from: name, type: 'update', body: input.value })

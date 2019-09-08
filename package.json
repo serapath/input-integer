@@ -4,7 +4,7 @@
   "description": "a ui component slider for numbers",
   "main": "src/input-integer.js",
   "scripts": {
-    "start": "budo demo/demo.js:bundle.js --live --open",
+    "start": "budo demo/demo.js:bundle.js --live --open --ssl",
     "build": "browserify demo/demo.js > bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,5 +23,8 @@
   "homepage": "https://github.com/serapath/input-integer#readme",
   "devDependencies": {
     "budo": "^11.6.3"
+  },
+  "dependencies": {
+    "csjs-inject": "^1.0.1"
   }
 }

@@ -1,0 +1,25 @@
+{
+  "name": "input-integer",
+  "version": "0.0.0",
+  "description": "a ui component slider for numbers",
+  "main": "src/input-integer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serapath/input-integer.git"
+  },
+  "keywords": [
+    "slider"
+  ],
+  "author": "@serpath",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/serapath/input-integer/issues"
+  },
+  "homepage": "https://github.com/serapath/input-integer#readme",
+  "devDependencies": {
+    "budo": "^11.6.3"
+  }
+}

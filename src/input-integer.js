@@ -1,10 +1,13 @@
 const csjs = require('csjs-inject')
-const parser = document.createElement('div')
+const bel = require('bel')
 
 module.exports = inputInteger
 
 function inputInteger () {
-  parser.innerHTML = `<input type="number" placeholder="number">`
-  const element = parser.children[0]
-  return element
+  return bel`<input class=${css.inputInteger} type="number" placeholder="number">`
 }
+
+const css = csjs`
+.inputInteger {
+  background-color: lightgreen;
+}`
